@@ -1,0 +1,21 @@
+[project]
+name = "fry-market-contracts"
+version = "0.1.0"
+description = "fry.market AlgoPy smart contracts"
+requires-python = ">=3.12,<4"
+dependencies = [
+    "algokit-utils>=4.2.3",
+    "puyapy>=5.8.1",
+    "py-algorand-sdk>=2.5.0,<3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
