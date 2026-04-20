@@ -1,19 +1,40 @@
-"""F-01: addRoyalty authorization must be creator-restricted.
-
-Phase 6 implementation notes:
-- Deploy fresh FryMarket.
-- Creator A creates collection X.
-- Attacker B calls addRoyalty(royalty_basis, collection_X) -> MUST FAIL.
-- Creator A calls addRoyalty for their own collection -> MUST SUCCEED.
-"""
+"""F-01: Only collection creator can set royalties."""
 import pytest
+from algokit_utils.models.amount import AlgoAmount
+from algokit_utils import AppClientMethodCallParams
+from algokit_utils.applications.app_client import LogicError
+from algosdk.encoding import decode_address
 
 
-@pytest.mark.skip(reason="Phase 6")
-def test_non_creator_cannot_set_royalty():
-    raise NotImplementedError()
+def test_add_royalty_by_creator_succeeds(deploy_market, algorand, creator):
+    """Collection creator CAN add royalty."""
+    app = deploy_market
+    # Create a collection with creator as the collection creator
+    app.send.call(AppClientMethodCallParams(
+        method="create_collection",
+        args=[1, creator.address],
+    ))
+    # Creator adds royalty - should succeed
+    app.send.call(AppClientMethodCallParams(
+        method="add_royalty",
+        args=[1, 500],  # 5% royalty
+        box_references=[b"r" + decode_address(creator.address)],
+    ))
 
 
-@pytest.mark.skip(reason="Phase 6")
-def test_creator_can_set_own_royalty():
-    raise NotImplementedError()
+def test_add_royalty_by_non_creator_fails(deploy_market, algorand, creator, buyer):
+    """Non-creator CANNOT add royalty (F-01 guard)."""
+    app = deploy_market
+    # Create collection with creator as owner
+    app.send.call(AppClientMethodCallParams(
+        method="create_collection",
+        args=[2, creator.address],
+    ))
+    # Buyer (non-creator) tries to add royalty - must fail
+    with pytest.raises(LogicError):
+        app.send.call(AppClientMethodCallParams(
+            method="add_royalty",
+            args=[2, 500],
+            sender=buyer.address,
+            signer=buyer.signer,
+        ))

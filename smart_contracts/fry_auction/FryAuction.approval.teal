@@ -1,0 +1,1019 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 8 0 1 4
+    bytecblock "admin" 0x0000000000000001 0x61 "secondary_fee" 0x0000000000000000
+    // smart_contracts/fry_auction/contract.py:36
+    // class FryAuction(ARC4Contract):
+    txn NumAppArgs
+    bz main_update_application@16
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    bz main_create_NoOp@12
+    pushbytess 0x435b0809 0x3b6f6631 0xd7da9b6e 0x164ce201 0xab3d9768 // method "asset_opt_in(uint64)void", method "add_royalty(uint64,uint64)void", method "list_nft_on_auction(uint64,uint64,uint64,uint64,uint64,uint64,axfer,byte[],byte[])void", method "cancel_nft_auction(uint64)void", method "claim_nft_royalty(uint64,uint64)void"
+    txna ApplicationArgs 0
+    match asset_opt_in add_royalty list_nft_on_auction cancel_nft_auction claim_nft_royalty
+    err
+
+main_create_NoOp@12:
+    // smart_contracts/fry_auction/contract.py:36
+    // class FryAuction(ARC4Contract):
+    pushbytes 0x7efda4d2 // method "create(uint64,uint64,uint64)void"
+    txna ApplicationArgs 0
+    match create
+    err
+
+main_update_application@16:
+    // smart_contracts/fry_auction/contract.py:232
+    // @arc4.baremethod(allow_actions=["UpdateApplication"])
+    txn OnCompletion
+    intc_3 // UpdateApplication
+    ==
+    txn ApplicationID
+    &&
+    assert
+    // smart_contracts/fry_auction/contract.py:234-235
+    // # F-03: Only admin can update the application
+    // assert Txn.sender == self.admin.value
+    txn Sender
+    intc_1 // 0
+    bytec_0 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:232
+    // @arc4.baremethod(allow_actions=["UpdateApplication"])
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.create[routing]() -> void:
+create:
+    // smart_contracts/fry_auction/contract.py:46
+    // @arc4.abimethod(create="require")
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/fry_auction/contract.py:48
+    // self.admin.value = Txn.sender
+    bytec_0 // "admin"
+    txn Sender
+    app_global_put
+    // smart_contracts/fry_auction/contract.py:49
+    // self.fry_id.value = fry_id
+    pushbytes "fry_id"
+    uncover 3
+    app_global_put
+    // smart_contracts/fry_auction/contract.py:50
+    // self.primary_fee.value = primary_fee
+    pushbytes "primary_fee"
+    uncover 2
+    app_global_put
+    // smart_contracts/fry_auction/contract.py:51
+    // self.secondary_fee.value = secondary_fee
+    bytec_3 // "secondary_fee"
+    swap
+    app_global_put
+    // smart_contracts/fry_auction/contract.py:46
+    // @arc4.abimethod(create="require")
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.asset_opt_in[routing]() -> void:
+asset_opt_in:
+    // smart_contracts/fry_auction/contract.py:53
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/fry_auction/contract.py:55
+    // assert Txn.sender == self.admin.value
+    txn Sender
+    intc_1 // 0
+    bytec_0 // "admin"
+    app_global_get_ex
+    assert // check self.admin exists
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:56-60
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    // ).submit()
+    itxn_begin
+    // smart_contracts/fry_auction/contract.py:58
+    // asset_receiver=Global.current_application_address,
+    global CurrentApplicationAddress
+    // smart_contracts/fry_auction/contract.py:59
+    // asset_amount=0,
+    intc_1 // 0
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // smart_contracts/fry_auction/contract.py:56
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:56-60
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=Global.current_application_address,
+    //     asset_amount=0,
+    // ).submit()
+    itxn_submit
+    // smart_contracts/fry_auction/contract.py:53
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.add_royalty[routing]() -> void:
+add_royalty:
+    // smart_contracts/fry_auction/contract.py:62
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/fry_auction/contract.py:64-65
+    // # F-01: Only the collection creator can set royalties
+    // collection_creator = self.collections[collection_id]
+    swap
+    itob
+    pushbytes 0x63
+    swap
+    concat
+    box_get
+    assert // check self.collections entry exists
+    // smart_contracts/fry_auction/contract.py:66
+    // assert Txn.sender == collection_creator
+    txn Sender
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:67
+    // self.royalties[Txn.sender] = royalty_percent
+    pushbytes 0x72
+    txn Sender
+    concat
+    swap
+    itob
+    box_put
+    // smart_contracts/fry_auction/contract.py:62
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.list_nft_on_auction[routing]() -> void:
+list_nft_on_auction:
+    // smart_contracts/fry_auction/contract.py:69
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    dup
+    btoi
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txna ApplicationArgs 4
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    dup
+    btoi
+    txna ApplicationArgs 5
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    dup
+    btoi
+    txna ApplicationArgs 6
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txn GroupIndex
+    intc_2 // 1
+    -
+    dup
+    gtxns TypeEnum
+    intc_3 // axfer
+    ==
+    assert // transaction type is axfer
+    txna ApplicationArgs 7
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    pushint 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 8
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    pushint 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/fry_auction/contract.py:82-83
+    // # Verify NFT sent to this contract
+    // assert nft_txn.asset_receiver == Global.current_application_address
+    dig 2
+    gtxns AssetReceiver
+    global CurrentApplicationAddress
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:84
+    // assert nft_txn.xfer_asset == asset
+    dig 2
+    gtxns XferAsset
+    dig 11
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:85
+    // assert nft_txn.asset_amount == UInt64(1)
+    uncover 2
+    gtxns AssetAmount
+    intc_2 // 1
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:87-88
+    // # F-08: Time validation guards
+    // assert bidding_start_time > Global.latest_timestamp
+    dig 5
+    global LatestTimestamp
+    >
+    assert
+    // smart_contracts/fry_auction/contract.py:89
+    // assert bidding_end_time > bidding_start_time
+    uncover 3
+    uncover 5
+    >
+    assert
+    // smart_contracts/fry_auction/contract.py:91-107
+    // # F-07: Factory pattern - create bidding app via inner txn
+    // create_txn = itxn.ApplicationCall(
+    //     approval_program=bidding_approval,
+    //     clear_state_program=bidding_clear,
+    //     global_num_uint=UInt64(9),
+    //     global_num_bytes=UInt64(2),
+    //     app_args=(
+    //         arc4.arc4_signature("create(uint64,address,uint64,uint64,uint64,uint64)void"),
+    //         arc4.UInt64(asset.id).bytes,
+    //         arc4.Address(Txn.sender).bytes,
+    //         arc4.UInt64(bid_start_amount).bytes,
+    //         arc4.UInt64(min_bid_amount).bytes,
+    //         arc4.UInt64(bidding_start_time).bytes,
+    //         arc4.UInt64(bidding_end_time).bytes,
+    //     ),
+    //     accounts=(Txn.sender,),
+    // ).submit()
+    itxn_begin
+    // smart_contracts/fry_auction/contract.py:100
+    // arc4.Address(Txn.sender).bytes,
+    txn Sender
+    // smart_contracts/fry_auction/contract.py:106
+    // accounts=(Txn.sender,),
+    dup
+    itxn_field Accounts
+    // smart_contracts/fry_auction/contract.py:98
+    // arc4.arc4_signature("create(uint64,address,uint64,uint64,uint64,uint64)void"),
+    pushbytes 0x7166c9b1 // method "create(uint64,address,uint64,uint64,uint64,uint64)void"
+    itxn_field ApplicationArgs
+    dig 9
+    itxn_field ApplicationArgs
+    itxn_field ApplicationArgs
+    dig 6
+    itxn_field ApplicationArgs
+    dig 5
+    itxn_field ApplicationArgs
+    dig 4
+    itxn_field ApplicationArgs
+    dig 3
+    itxn_field ApplicationArgs
+    // smart_contracts/fry_auction/contract.py:96
+    // global_num_bytes=UInt64(2),
+    pushint 2
+    itxn_field GlobalNumByteSlice
+    // smart_contracts/fry_auction/contract.py:95
+    // global_num_uint=UInt64(9),
+    pushint 9
+    itxn_field GlobalNumUint
+    itxn_field ClearStateProgramPages
+    itxn_field ApprovalProgramPages
+    // smart_contracts/fry_auction/contract.py:91-92
+    // # F-07: Factory pattern - create bidding app via inner txn
+    // create_txn = itxn.ApplicationCall(
+    pushint 6 // appl
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:91-107
+    // # F-07: Factory pattern - create bidding app via inner txn
+    // create_txn = itxn.ApplicationCall(
+    //     approval_program=bidding_approval,
+    //     clear_state_program=bidding_clear,
+    //     global_num_uint=UInt64(9),
+    //     global_num_bytes=UInt64(2),
+    //     app_args=(
+    //         arc4.arc4_signature("create(uint64,address,uint64,uint64,uint64,uint64)void"),
+    //         arc4.UInt64(asset.id).bytes,
+    //         arc4.Address(Txn.sender).bytes,
+    //         arc4.UInt64(bid_start_amount).bytes,
+    //         arc4.UInt64(min_bid_amount).bytes,
+    //         arc4.UInt64(bidding_start_time).bytes,
+    //         arc4.UInt64(bidding_end_time).bytes,
+    //     ),
+    //     accounts=(Txn.sender,),
+    // ).submit()
+    itxn_submit
+    // smart_contracts/fry_auction/contract.py:113
+    // seller=arc4.Address(Txn.sender),
+    txn Sender
+    itxn CreatedApplicationID
+    // smart_contracts/fry_auction/contract.py:117
+    // bidding_app_id=arc4.UInt64(bidding_app_id),
+    itob
+    // smart_contracts/fry_auction/contract.py:118
+    // highest_bidder=arc4.Address(Global.zero_address),
+    global ZeroAddress
+    // smart_contracts/fry_auction/contract.py:111-124
+    // # Store auction data
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=arc4.Address(Txn.sender),
+    //     asset_id=arc4.UInt64(asset.id),
+    //     bid_start_amount=arc4.UInt64(bid_start_amount),
+    //     min_bid_amount=arc4.UInt64(min_bid_amount),
+    //     bidding_app_id=arc4.UInt64(bidding_app_id),
+    //     highest_bidder=arc4.Address(Global.zero_address),
+    //     highest_bid=arc4.UInt64(0),
+    //     bidding_start_time=arc4.UInt64(bidding_start_time),
+    //     bidding_end_time=arc4.UInt64(bidding_end_time),
+    //     status=arc4.UInt64(1),
+    //     collection_id=arc4.UInt64(collection_id),
+    // )
+    uncover 2
+    uncover 9
+    concat
+    uncover 7
+    concat
+    uncover 6
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    // smart_contracts/fry_auction/contract.py:119
+    // highest_bid=arc4.UInt64(0),
+    bytec 4 // 0x0000000000000000
+    // smart_contracts/fry_auction/contract.py:111-124
+    // # Store auction data
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=arc4.Address(Txn.sender),
+    //     asset_id=arc4.UInt64(asset.id),
+    //     bid_start_amount=arc4.UInt64(bid_start_amount),
+    //     min_bid_amount=arc4.UInt64(min_bid_amount),
+    //     bidding_app_id=arc4.UInt64(bidding_app_id),
+    //     highest_bidder=arc4.Address(Global.zero_address),
+    //     highest_bid=arc4.UInt64(0),
+    //     bidding_start_time=arc4.UInt64(bidding_start_time),
+    //     bidding_end_time=arc4.UInt64(bidding_end_time),
+    //     status=arc4.UInt64(1),
+    //     collection_id=arc4.UInt64(collection_id),
+    // )
+    concat
+    uncover 3
+    concat
+    uncover 2
+    concat
+    // smart_contracts/fry_auction/contract.py:122
+    // status=arc4.UInt64(1),
+    bytec_1 // 0x0000000000000001
+    // smart_contracts/fry_auction/contract.py:111-124
+    // # Store auction data
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=arc4.Address(Txn.sender),
+    //     asset_id=arc4.UInt64(asset.id),
+    //     bid_start_amount=arc4.UInt64(bid_start_amount),
+    //     min_bid_amount=arc4.UInt64(min_bid_amount),
+    //     bidding_app_id=arc4.UInt64(bidding_app_id),
+    //     highest_bidder=arc4.Address(Global.zero_address),
+    //     highest_bid=arc4.UInt64(0),
+    //     bidding_start_time=arc4.UInt64(bidding_start_time),
+    //     bidding_end_time=arc4.UInt64(bidding_end_time),
+    //     status=arc4.UInt64(1),
+    //     collection_id=arc4.UInt64(collection_id),
+    // )
+    concat
+    swap
+    concat
+    // smart_contracts/fry_auction/contract.py:111-112
+    // # Store auction data
+    // self.auctions[asset.id] = AuctionValue(
+    swap
+    itob
+    bytec_2 // 0x61
+    swap
+    concat
+    // smart_contracts/fry_auction/contract.py:111-124
+    // # Store auction data
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=arc4.Address(Txn.sender),
+    //     asset_id=arc4.UInt64(asset.id),
+    //     bid_start_amount=arc4.UInt64(bid_start_amount),
+    //     min_bid_amount=arc4.UInt64(min_bid_amount),
+    //     bidding_app_id=arc4.UInt64(bidding_app_id),
+    //     highest_bidder=arc4.Address(Global.zero_address),
+    //     highest_bid=arc4.UInt64(0),
+    //     bidding_start_time=arc4.UInt64(bidding_start_time),
+    //     bidding_end_time=arc4.UInt64(bidding_end_time),
+    //     status=arc4.UInt64(1),
+    //     collection_id=arc4.UInt64(collection_id),
+    // )
+    swap
+    box_put
+    // smart_contracts/fry_auction/contract.py:69
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.cancel_nft_auction[routing]() -> void:
+cancel_nft_auction:
+    // smart_contracts/fry_auction/contract.py:126
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/fry_auction/contract.py:128
+    // auction = self.auctions[asset.id].copy()
+    dup
+    itob
+    bytec_2 // 0x61
+    swap
+    concat
+    dup
+    box_get
+    assert // check self.auctions entry exists
+    // smart_contracts/fry_auction/contract.py:129
+    // assert auction.seller == arc4.Address(Txn.sender)
+    dup
+    extract 0 32
+    dup
+    txn Sender
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:130
+    // assert auction.status == arc4.UInt64(1)
+    dig 1
+    extract 120 8
+    bytec_1 // 0x0000000000000001
+    b==
+    assert
+    // smart_contracts/fry_auction/contract.py:132-133
+    // # F-04: Can only cancel BEFORE bidding starts
+    // assert Global.latest_timestamp < auction.bidding_start_time.native
+    global LatestTimestamp
+    dig 2
+    extract 104 8
+    dig 3
+    pushint 104
+    extract_uint64
+    uncover 2
+    >
+    assert
+    // smart_contracts/fry_auction/contract.py:135-140
+    // # Return NFT to seller
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=1,
+    // ).submit()
+    itxn_begin
+    // smart_contracts/fry_auction/contract.py:138
+    // asset_receiver=Txn.sender,
+    txn Sender
+    // smart_contracts/fry_auction/contract.py:139
+    // asset_amount=1,
+    intc_2 // 1
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    uncover 4
+    itxn_field XferAsset
+    // smart_contracts/fry_auction/contract.py:135-136
+    // # Return NFT to seller
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:135-140
+    // # Return NFT to seller
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=Txn.sender,
+    //     asset_amount=1,
+    // ).submit()
+    itxn_submit
+    // smart_contracts/fry_auction/contract.py:145
+    // asset_id=auction.asset_id,
+    dig 2
+    extract 32 8
+    // smart_contracts/fry_auction/contract.py:146
+    // bid_start_amount=auction.bid_start_amount,
+    dig 3
+    extract 40 8
+    // smart_contracts/fry_auction/contract.py:147
+    // min_bid_amount=auction.min_bid_amount,
+    dig 4
+    extract 48 8
+    // smart_contracts/fry_auction/contract.py:148
+    // bidding_app_id=auction.bidding_app_id,
+    dig 5
+    extract 56 8
+    // smart_contracts/fry_auction/contract.py:149
+    // highest_bidder=auction.highest_bidder,
+    dig 6
+    extract 64 32
+    // smart_contracts/fry_auction/contract.py:150
+    // highest_bid=auction.highest_bid,
+    dig 7
+    extract 96 8
+    // smart_contracts/fry_auction/contract.py:152
+    // bidding_end_time=auction.bidding_end_time,
+    dig 8
+    extract 112 8
+    // smart_contracts/fry_auction/contract.py:154
+    // collection_id=auction.collection_id,
+    uncover 9
+    extract 128 8
+    // smart_contracts/fry_auction/contract.py:142-155
+    // # Mark cancelled
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=auction.seller,
+    //     asset_id=auction.asset_id,
+    //     bid_start_amount=auction.bid_start_amount,
+    //     min_bid_amount=auction.min_bid_amount,
+    //     bidding_app_id=auction.bidding_app_id,
+    //     highest_bidder=auction.highest_bidder,
+    //     highest_bid=auction.highest_bid,
+    //     bidding_start_time=auction.bidding_start_time,
+    //     bidding_end_time=auction.bidding_end_time,
+    //     status=arc4.UInt64(0),
+    //     collection_id=auction.collection_id,
+    // )
+    uncover 9
+    uncover 8
+    concat
+    uncover 7
+    concat
+    uncover 6
+    concat
+    uncover 5
+    concat
+    uncover 4
+    concat
+    uncover 3
+    concat
+    uncover 3
+    concat
+    uncover 2
+    concat
+    // smart_contracts/fry_auction/contract.py:153
+    // status=arc4.UInt64(0),
+    bytec 4 // 0x0000000000000000
+    // smart_contracts/fry_auction/contract.py:142-155
+    // # Mark cancelled
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=auction.seller,
+    //     asset_id=auction.asset_id,
+    //     bid_start_amount=auction.bid_start_amount,
+    //     min_bid_amount=auction.min_bid_amount,
+    //     bidding_app_id=auction.bidding_app_id,
+    //     highest_bidder=auction.highest_bidder,
+    //     highest_bid=auction.highest_bid,
+    //     bidding_start_time=auction.bidding_start_time,
+    //     bidding_end_time=auction.bidding_end_time,
+    //     status=arc4.UInt64(0),
+    //     collection_id=auction.collection_id,
+    // )
+    concat
+    swap
+    concat
+    box_put
+    // smart_contracts/fry_auction/contract.py:126
+    // @arc4.abimethod
+    intc_2 // 1
+    return
+
+
+// smart_contracts.fry_auction.contract.FryAuction.claim_nft_royalty[routing]() -> void:
+claim_nft_royalty:
+    intc_1 // 0
+    dup
+    // smart_contracts/fry_auction/contract.py:157
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_0 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/fry_auction/contract.py:163
+    // auction = self.auctions[asset.id].copy()
+    swap
+    itob
+    bytec_2 // 0x61
+    swap
+    concat
+    dup
+    cover 2
+    box_get
+    swap
+    dup
+    cover 2
+    cover 3
+    assert // check self.auctions entry exists
+    // smart_contracts/fry_auction/contract.py:164
+    // assert auction.status == arc4.UInt64(1)
+    dup
+    extract 120 8
+    bytec_1 // 0x0000000000000001
+    b==
+    assert
+    // smart_contracts/fry_auction/contract.py:165
+    // assert auction.bidding_app_id.native == bidding_app.id
+    dup
+    extract 56 8
+    cover 2
+    dup
+    pushint 56
+    extract_uint64
+    dig 2
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:167-168
+    // # F-07: Validate bidding app creator is this contract
+    // assert bidding_app.creator == Global.current_application_address
+    dig 1
+    app_params_get AppCreator
+    assert // application exists
+    global CurrentApplicationAddress
+    ==
+    assert
+    // smart_contracts/fry_auction/contract.py:170-171
+    // # Auction must have ended
+    // assert Global.latest_timestamp > auction.bidding_end_time.native
+    global LatestTimestamp
+    dig 1
+    extract 112 8
+    cover 3
+    dig 1
+    pushint 112
+    extract_uint64
+    >
+    assert
+    // smart_contracts/fry_auction/contract.py:173-174
+    // # Read winning bid from bidding app state
+    // highest_bid, bid_exists = op.AppGlobal.get_ex_uint64(bidding_app, b"highest_bid")
+    dig 1
+    pushbytes 0x686967686573745f626964
+    app_global_get_ex
+    swap
+    dup
+    cover 3
+    cover 4
+    // smart_contracts/fry_auction/contract.py:175
+    // assert bid_exists
+    assert
+    // smart_contracts/fry_auction/contract.py:178
+    // highest_bidder_bytes, bidder_exists = op.AppGlobal.get_ex_bytes(bidding_app, b"highest_bidder")
+    uncover 2
+    pushbytes 0x686967686573745f626964646572
+    app_global_get_ex
+    swap
+    cover 3
+    // smart_contracts/fry_auction/contract.py:179
+    // assert bidder_exists
+    assert
+    // smart_contracts/fry_auction/contract.py:182
+    // assert winning_amount > UInt64(0)
+    dig 1
+    assert
+    // smart_contracts/fry_auction/contract.py:184
+    // seller = auction.seller.native
+    dup
+    extract 0 32
+    cover 2
+    // smart_contracts/fry_auction/contract.py:186-187
+    // # Platform fee
+    // fee_bps = self.secondary_fee.value
+    intc_1 // 0
+    bytec_3 // "secondary_fee"
+    app_global_get_ex
+    assert // check self.secondary_fee exists
+    // smart_contracts/fry_auction/contract.py:188
+    // fee_amount = winning_amount * fee_bps // UInt64(10000)
+    dig 2
+    *
+    pushint 10000
+    /
+    // smart_contracts/fry_auction/contract.py:189
+    // seller_amount = winning_amount - fee_amount
+    uncover 2
+    swap
+    -
+    swap
+    // smart_contracts/fry_auction/contract.py:191-192
+    // # Royalty to collection creator
+    // collection_id = auction.collection_id.native
+    extract 128 8
+    dup
+    // smart_contracts/fry_auction/contract.py:193
+    // if collection_id in self.collections:
+    pushbytes 0x63
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    bz claim_nft_royalty_after_if_else@6
+    // smart_contracts/fry_auction/contract.py:194
+    // creator = self.collections[collection_id]
+    dup
+    box_get
+    swap
+    dup
+    cover 2
+    bury 15
+    assert // check self.collections entry exists
+    // smart_contracts/fry_auction/contract.py:195
+    // if creator in self.royalties:
+    pushbytes 0x72
+    swap
+    concat
+    dup
+    bury 13
+    box_len
+    bury 1
+    bz claim_nft_royalty_after_if_else@6
+    // smart_contracts/fry_auction/contract.py:196
+    // royalty_bps = self.royalties[creator]
+    dig 11
+    box_get
+    assert // check self.royalties entry exists
+    btoi
+    // smart_contracts/fry_auction/contract.py:197
+    // royalty_amount = winning_amount * royalty_bps // UInt64(10000)
+    dig 6
+    *
+    pushint 10000
+    /
+    // smart_contracts/fry_auction/contract.py:198
+    // seller_amount = seller_amount - royalty_amount
+    dig 3
+    dig 1
+    -
+    bury 4
+    // smart_contracts/fry_auction/contract.py:199-202
+    // itxn.Payment(
+    //     receiver=creator,
+    //     amount=royalty_amount,
+    // ).submit()
+    itxn_begin
+    itxn_field Amount
+    dig 12
+    itxn_field Receiver
+    // smart_contracts/fry_auction/contract.py:199
+    // itxn.Payment(
+    intc_2 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:199-202
+    // itxn.Payment(
+    //     receiver=creator,
+    //     amount=royalty_amount,
+    // ).submit()
+    itxn_submit
+
+claim_nft_royalty_after_if_else@6:
+    // smart_contracts/fry_auction/contract.py:204-208
+    // # Pay seller
+    // itxn.Payment(
+    //     receiver=seller,
+    //     amount=seller_amount,
+    // ).submit()
+    itxn_begin
+    dig 2
+    itxn_field Amount
+    dig 3
+    dup
+    itxn_field Receiver
+    // smart_contracts/fry_auction/contract.py:204-205
+    // # Pay seller
+    // itxn.Payment(
+    intc_2 // pay
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:204-208
+    // # Pay seller
+    // itxn.Payment(
+    //     receiver=seller,
+    //     amount=seller_amount,
+    // ).submit()
+    itxn_submit
+    // smart_contracts/fry_auction/contract.py:210-215
+    // # Transfer NFT to winner
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=winner,
+    //     asset_amount=1,
+    // ).submit()
+    itxn_begin
+    // smart_contracts/fry_auction/contract.py:214
+    // asset_amount=1,
+    intc_2 // 1
+    itxn_field AssetAmount
+    dig 5
+    dup
+    cover 2
+    itxn_field AssetReceiver
+    dig 12
+    itxn_field XferAsset
+    // smart_contracts/fry_auction/contract.py:210-211
+    // # Transfer NFT to winner
+    // itxn.AssetTransfer(
+    intc_3 // axfer
+    itxn_field TypeEnum
+    intc_1 // 0
+    itxn_field Fee
+    // smart_contracts/fry_auction/contract.py:210-215
+    // # Transfer NFT to winner
+    // itxn.AssetTransfer(
+    //     xfer_asset=asset,
+    //     asset_receiver=winner,
+    //     asset_amount=1,
+    // ).submit()
+    itxn_submit
+    // smart_contracts/fry_auction/contract.py:220
+    // asset_id=auction.asset_id,
+    dig 10
+    dup
+    extract 32 8
+    // smart_contracts/fry_auction/contract.py:221
+    // bid_start_amount=auction.bid_start_amount,
+    dig 1
+    extract 40 8
+    // smart_contracts/fry_auction/contract.py:222
+    // min_bid_amount=auction.min_bid_amount,
+    dig 2
+    extract 48 8
+    // smart_contracts/fry_auction/contract.py:225
+    // highest_bid=arc4.UInt64(winning_amount),
+    dig 11
+    itob
+    // smart_contracts/fry_auction/contract.py:226
+    // bidding_start_time=auction.bidding_start_time,
+    uncover 4
+    extract 104 8
+    // smart_contracts/fry_auction/contract.py:217-230
+    // # Mark settled
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=auction.seller,
+    //     asset_id=auction.asset_id,
+    //     bid_start_amount=auction.bid_start_amount,
+    //     min_bid_amount=auction.min_bid_amount,
+    //     bidding_app_id=auction.bidding_app_id,
+    //     highest_bidder=arc4.Address(winner),
+    //     highest_bid=arc4.UInt64(winning_amount),
+    //     bidding_start_time=auction.bidding_start_time,
+    //     bidding_end_time=auction.bidding_end_time,
+    //     status=arc4.UInt64(2),
+    //     collection_id=auction.collection_id,
+    // )
+    uncover 5
+    uncover 5
+    concat
+    uncover 4
+    concat
+    uncover 3
+    concat
+    dig 11
+    concat
+    uncover 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    dig 7
+    concat
+    // smart_contracts/fry_auction/contract.py:228
+    // status=arc4.UInt64(2),
+    pushbytes 0x0000000000000002
+    // smart_contracts/fry_auction/contract.py:217-230
+    // # Mark settled
+    // self.auctions[asset.id] = AuctionValue(
+    //     seller=auction.seller,
+    //     asset_id=auction.asset_id,
+    //     bid_start_amount=auction.bid_start_amount,
+    //     min_bid_amount=auction.min_bid_amount,
+    //     bidding_app_id=auction.bidding_app_id,
+    //     highest_bidder=arc4.Address(winner),
+    //     highest_bid=arc4.UInt64(winning_amount),
+    //     bidding_start_time=auction.bidding_start_time,
+    //     bidding_end_time=auction.bidding_end_time,
+    //     status=arc4.UInt64(2),
+    //     collection_id=auction.collection_id,
+    // )
+    concat
+    dig 2
+    concat
+    dig 10
+    swap
+    box_put
+    // smart_contracts/fry_auction/contract.py:157
+    // @arc4.abimethod
+    intc_2 // 1
+    return
