@@ -20,8 +20,8 @@ Compile (AlgoPy via puyapy):
 
 ## Deployment targets
 
-- Localnet: ATLAS00 (100.69.195.100) via algokit localnet
-- Mainnet: via WC signer on HERMES00
+- Localnet: <internal-host> via algokit localnet
+- Mainnet: via WC signer on <internal-host>
 
 ## Audit remediation tracking
 

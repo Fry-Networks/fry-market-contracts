@@ -1,6 +1,6 @@
 # F-Fix Proof Log
 
-All proofs run on ATLAS00 localnet (algokit devmode) with puyapy 5.8.1.
+All proofs run on <internal-host> localnet (algokit devmode) with puyapy 5.8.1.
 Protocol: test PASS with guard -> remove guard -> recompile -> test FAIL -> restore -> recompile.
 
 ## F-01: add_royalty Authorization
